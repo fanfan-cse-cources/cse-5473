@@ -1,0 +1,209 @@
+\documentclass[11pt]{article}
+%\usepackage{psfig}
+\usepackage{latexsym}
+\usepackage{amsfonts}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{listings}
+% to use hyperlinks in References section
+\hypersetup{urlbordercolor={1 1 1}}
+\usepackage{graphicx}
+\usepackage{listings}
+
+%define colors
+\usepackage{xcolor}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{urlbordercolor={1 1 1}}
+\DeclareGraphicsExtensions{.pdf,.jpg,.png,.eps}
+\setlength{\textheight}{8.5in}
+\setlength{\textwidth}{6.0in}
+\setlength{\headheight}{0in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\oddsidemargin}{-.5in}
+
+
+\newenvironment{cvl}{\begin{list}{$\bullet$}{
+\setlength{\leftmargin}{0.3in} \setlength{\labelsep}{0.07in}
+\setlength{\labelwidth}{0.17in} \setlength{\rightmargin}{0.0in}
+\setlength{\topsep}{0.000in} \setlength{\partopsep}{0.000in}
+\setlength{\parskip}{0.000in} \setlength{\parsep}{0.005in}
+\setlength{\itemsep}{0.005in}}}{\end{list}}
+
+\DeclareGraphicsExtensions{.pdf,.jpg,.png,.eps}
+\usepackage[T1]{fontenc}	%special characters copy-able
+
+% \usepackage{times}
+\usepackage{enumerate}
+
+\input{preamble.tex}
+
+\begin{document}
+
+
+\lecture{Homework \#2}{Autumn 2020}{Asymmetric Cryptography}{Due Oct 4th, 11:59PM}
+
+\lstset{ %
+   language=C,                % the language of the code
+   basicstyle=\footnotesize,           % the size of the fonts that are used for the code
+	literate={-}{-}1,
+   columns=fullflexible,   %copy-paste-able
+   %numbers=left,                   % where to put the line-numbers
+   numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
+   stepnumber=2,                   % the step between two line-numbers. If it's 1, each line
+                                   % will be numbered
+   numbersep=5pt,                  % how far the line-numbers are from the code
+   backgroundcolor=\color{white},      % choose the background color. You must add \usepackage{color}
+   showspaces=false,               % show spaces adding particular underscores
+   showstringspaces=false,         % underline spaces within strings
+   showtabs=false,                 % show tabs within strings adding particular underscores
+   frame=single,                   % adds a frame around the code
+   rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+   tabsize=2,                      % sets default tabsize to 2 spaces
+   captionpos=b,                   % sets the caption-position to bottom
+   breaklines=true,                % sets automatic line breaking
+   breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+   title=\lstname,                   % show the filename of files included with \lstinputlisting;
+                                   % also try caption instead of title
+   keywordstyle=\color{blue},          % keyword style
+   commentstyle=\color{dkgreen},       % comment style
+   stringstyle=\color{mauve},         % string literal style
+   escapeinside={\%*}{*)},            % if you want to add LaTeX within your code
+   morekeywords={*,...}               % if you want to add more keywords to the set
+ }
+%%%% body goes in here %%%%
+
+
+
+
+
+
+\section{Diffie-Hellman [15 pts]}
+Consider a Diffie-Hellman scheme with a common prime q = 11 and a primitive root g = 2.
+\begin{enumerate}
+\item  If user A has public key $Y_A$ = 9, what is A's private key XA?
+\item If user B has public key $Y_B$ = 3, what is the secret key K shared with A?
+
+\end{enumerate}
+
+\medskip
+
+
+
+
+
+
+\vspace{1in}
+
+
+\section{RSA [20 pts] }
+\begin{enumerate}
+\item  Construct a table showing an example of the RSA cryptosystem with parameters p = 17, q = 19, and e = 5. The table should have two rows, one for the plaintext M and the other for the ciphertext C. The columns should correspond to integer values in the range [10; 15] for M. Hint: Write a small program or use a spreadsheet.
+\item In a public-key system using RSA, you intercept the ciphertex C = 10, sent to a user whose public key is e = 5, n = 35. What is the plaintext M?
+\item In a public-key system using RSA, the public key of a certain user is e = 31, n = 3599. What is the plaintext M? Hint: you may use the Unix program \texttt{factor}\footnote{http://www.gnu.org/software/coreutils/factor}.
+\item In a public-key system using RSA, the public key of a certain user with public key e; n leaks his private key d. Being lazy, he re-computes a new e and d using the same n. Is this safe? Why or why not?
+\end{enumerate}
+
+\newpage
+
+
+
+
+
+\section{Key Exchange [20 pts] }
+
+Tatebayashi, Matsuzaki, and Newman (TMN) proposed the following protocol, which enables Alice and Bob to establish a shared symmetric key K with the help of a trusted server S. Both Alice and Bob know the server's public key $K_S$. Alice randomly generates a temporary secret $K_A$, while Bob randomly generates the new key K to be shared with Alice. The protocol then proceeds as follows:
+
+	Alice $\Rightarrow$ Server:  $K_S\{K_A\}$
+
+	Bob $\Rightarrow $ Server: $K_S\{K\}$
+
+	Server $\Rightarrow$ Alice:  $K\oplus K_A$
+
+	Alice recovers key K as $K_A\oplus (K\oplus K_A)$
+
+To summarize, Alice sends her secret to the server encrypted with the server's public key, while Bob sends the newly generated key, also encrypted with the server's public key. The server XORs the two values together and sends the result to Alice. As a result, both Alice and Bob know K.
+Suppose that evil Charlie eavesdropped on Bob's message to the server. How can he with the help of his equally evil buddy Don, extract the key K that Alice and Bob are using to protect their communications? Assume that Charlie and Don can engage in the TMN protocol with the server, but they do not know the server's private key.
+
+
+\vspace{1in}
+
+
+
+
+\section{Performance Comparison: RSA vs. AES [10 Points]}
+Asymetric cryptography is typically much slower than symetric cryptography. Please prepare a file (\texttt{message.txt})
+that contains a 16-byte message. Please also generate an 1024-bit RSA public/private key pair. Then, do the
+following:
+\begin{enumerate}
+\item Encrypt \texttt{message.txt} using the public key; save the the output in message \texttt{enc.txt}.
+(Hint: using command \texttt{openssl genrsa -des3 -out rsa.key 1024} will generate a public/private key pair stored in file rsa.key, then using \texttt{cat message.txt | openssl rsautl -encrypt -inkey rsa.key > message.enc}. If \texttt{openssl} is not istalled, please use \texttt{sudo apt-get install openssl})
+\item Decrypt message \texttt{enc.txt} using the private key. (Hint: \texttt{cat message.enc | openssl rsautl -decrypt -inkey rsa.key > message.dec})
+\item Encrypt \texttt{message.txt} using a 128-bit AES key. (Hint: command such as \texttt{openssl enc -aes-128-cbc -e -in msg.txt -out mes.enc -K} \\ \texttt{00112233445566778899aabbccddeeff -iv 0102030405060708} will perform this job).
+\item Compare the time spent on each of the above operations, and describe your observations. If an operation is too fast, you may want to repeat it for many times, and then take an average.
+\end{enumerate}
+
+After you finish the above assignment, you can now use OpenSSL's speed command to do such a bench-
+marking. Please describe whether your observations are similar to those from the outputs of the speed
+command. The following command shows examples of using speed to benchmark rsa and aes:
+
+\begin{lstlisting}
+% openssl speed rsa
+% openssl speed aes
+\end{lstlisting}
+
+
+
+
+\section{Testing Digital Signatures [15 Points]}
+Let's use OpenSSL to generate digital signatures. Please prepare a file (example.txt) of
+any size. Please also prepare an RSA public/private key pair, then do the following:
+\begin{enumerate}
+\item Sign the SHA256 hash of example.txt; save the output in example.sha256.
+\item Verify the digital signature in example.sha256.
+\item Slightly modify example.txt, and verify the digital signature again
+\end{enumerate}
+Please describe how you did the above operations (e.g., what commands do you use, etc.). Explain your
+observations. Please also explain why digital signatures are useful.
+
+
+
+\vspace{1in}
+
+\section{Sending emails with public key cryptography [20 Points]}
+
+Public Keys is a concept where two keys are involved. One key is a Public Key that can be spread through all sorts of media and may be obtained by anyone. The other key is the Private Key. This key is secret and cannot be spread. This key is only available to the owner. When the system is well implemented the secret key cannot be derived from the public key. Now the sender will crypt the message with the public key belonging to the receiver. Then decryption will be done with the secret key of the receiver.
+
+In this assignment, you will follow detailed instructions and gain some hands on experience of how to use the public key cryptography. To begin with, please follow the manual of GPG on how to create your own keys. Please keep in mind, using public key cryptography to send message will be useful in your whole life. Understanding how to use it is not of wasting of your time.
+
+Also, there are many example tutorials, such as those:
+\begin{itemize}
+\item \url{http://www.dewinter.com/gnupg_howto/english/GPGMiniHowto.html} or
+\item \url{https://help.ubuntu.com/community/GnuPrivacyGuardHowto}. We recommend this link as it contains detailed instructions on how to create your keys, etc.
+\end{itemize}
+
+To install gnupg, you can use:
+\begin{lstlisting}
+%sudo apt-get install gnupg
+\end{lstlisting}
+
+\paragraph{Assignment Details.} This task has to be has to be solved by pairs. First, please try with your peers, and then test with the TA. Specifically, please first find another student in the class and ask her/him to sign with their key, with the following message (using the instruction manuals for GPG). ``\texttt{[lastname.num] has the following public key [PK]}'',
+where [lastname.num] is the OSU ID of the other student, and PK is her/his public key. (You should also sign a similar message for the other student.)
+
+Then, send the signed message you got from your collaborator encrypted with TA's public key so that she knows your public key when she decrypts your message using her private key.
+
+Next, please also find the public key of the TA in the following link: \url{http://web.cse.ohio-state.edu/~lin.3021/file/f20a/ta.asc}. The email message to the TA (His email address is \texttt{ma.1189@buckeyemail.osu.edu}) should have the following Subject line: \texttt{[CSE 5473] HW2 <Last Name> <First Name>}
+
+Then the TA will send you an encrypted message with your public key, and you need to write it down what you have observed in all these steps, as well as the decrypted message in your report.
+
+
+\vspace{1in}
+
+
+\section{Submiting your report}
+Please write a report describing how you solve each of the problem above, and submit at CARMEN.
+
+\end{document}
