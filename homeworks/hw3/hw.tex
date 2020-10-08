@@ -1,0 +1,158 @@
+\documentclass[11pt]{article}
+%\usepackage{psfig}
+\usepackage{latexsym}
+\usepackage{amsfonts}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{listings}
+% to use hyperlinks in References section
+\hypersetup{urlbordercolor={1 1 1}}
+\usepackage{graphicx}
+\usepackage{listings}	
+
+%define colors
+\usepackage{xcolor} 	
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{urlbordercolor={1 1 1}}
+\DeclareGraphicsExtensions{.pdf,.jpg,.png,.eps}
+\setlength{\textheight}{8.5in}
+\setlength{\textwidth}{6.0in}
+\setlength{\headheight}{0in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\oddsidemargin}{-.5in}
+
+
+\newenvironment{cvl}{\begin{list}{$\bullet$}{
+\setlength{\leftmargin}{0.3in} \setlength{\labelsep}{0.07in}
+\setlength{\labelwidth}{0.17in} \setlength{\rightmargin}{0.0in}
+\setlength{\topsep}{0.000in} \setlength{\partopsep}{0.000in}
+\setlength{\parskip}{0.000in} \setlength{\parsep}{0.005in}
+\setlength{\itemsep}{0.005in}}}{\end{list}}
+
+\DeclareGraphicsExtensions{.pdf,.jpg,.png,.eps}
+\usepackage[T1]{fontenc}	%special characters copy-able
+
+\usepackage{times}
+\usepackage{enumerate}
+
+\input{preamble.tex}
+
+\begin{document}
+
+
+\lecture{Homework \#3}{Autumn 2020}{Hash, and Message Authentication Code}{Due October 15th, 11:59PM}
+
+\lstset{ %
+   language=C,                % the language of the code
+   basicstyle=\footnotesize,           % the size of the fonts that are used for the code
+	literate={-}{-}1,   
+   columns=fullflexible,   %copy-paste-able
+   %numbers=left,                   % where to put the line-numbers
+   numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
+   stepnumber=2,                   % the step between two line-numbers. If it's 1, each line 
+                                   % will be numbered
+   numbersep=5pt,                  % how far the line-numbers are from the code
+   backgroundcolor=\color{white},      % choose the background color. You must add \usepackage{color}
+   showspaces=false,               % show spaces adding particular underscores
+   showstringspaces=false,         % underline spaces within strings
+   showtabs=false,                 % show tabs within strings adding particular underscores
+   frame=single,                   % adds a frame around the code
+   rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+   tabsize=2,                      % sets default tabsize to 2 spaces
+   captionpos=b,                   % sets the caption-position to bottom
+   breaklines=true,                % sets automatic line breaking
+   breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+   title=\lstname,                   % show the filename of files included with \lstinputlisting;
+                                   % also try caption instead of title
+   keywordstyle=\color{blue},          % keyword style
+   commentstyle=\color{dkgreen},       % comment style
+   stringstyle=\color{mauve},         % string literal style
+   escapeinside={\%*}{*)},            % if you want to add LaTeX within your code
+   morekeywords={*,...}               % if you want to add more keywords to the set
+ }
+%%%% body goes in here %%%%
+
+
+
+
+
+
+\section{Message Digest, and Hash (10 Points)}
+
+In this assignment, we would like you to play with various one-way hash algorithms. Since \texttt{openssl} (your VM should have installed it) has a suite of the cryptography algorithm implementations, let's directly use the implementation from this tool. You can use the following \texttt{openssl dgst} command to generate the hash value for a file. To see the manuals, you can type {\tt man openssl} and {\tt man dgst}.
+\begin{lstlisting}
+ % openssl dgst dgsttype filename
+\end{lstlisting}
+\vspace{-6mm}
+Please replace the \textit{dgsttype} with a specific one-way hash algorithm, such as \textit{-md5, -sha1, -sha256},
+etc. In this assignment, you should try at least 3 different algorithms, and describe your observations (write down in your report). You can find the supported one-way hash algorithms by typing {\tt man openssl}.
+
+
+
+\section{Keyed Hash and HMAC (20 Points)}
+In this assignment, we would like you to generate a keyed hash (i.e. MAC) for a file. We can use the {\tt -hmac} option. The following example generates a keyed hash for a file using the HMAC-MD5 algorithm. The string following the -hmac option is the key.
+
+\begin{lstlisting}
+ % openssl dgst -md5 -hmac "abcdefg" filename
+\end{lstlisting}
+\vspace{-6mm}
+
+Please generate a keyed hash using HMAC-MD5, HMC-SHA256, and HMAC-SHA1 for any file that
+you choose. Please try several keys with different length. Do we have to use a key with a fixed size in
+HMAC? If so, what is the key size? If not, why?
+
+\section{The Randomness of One-way Hash (30 Points)}
+To understand the properties of one-way hash functions, we would like you to do the following exercise for MD5
+and SHA256:
+\begin{enumerate}
+\item Create a text file of any length.
+\item Generate the hash value $H_1$ for this file using a specific hash algorithm.
+\item Flip one bit of the input file. You can achieve this modification using {\tt ghex}\footnote{You can install ghex via \$ {\tt sudo apt-get install ghex}.}
+\item Generate the hash value $H_2$ for the modified file.
+\item Please observe whether $H_1$ and $H_2$ are similar or not. Please describe your observations in the report.
+You can write a short program to count how many bits are the same between $H_1$ and $H_2$.
+\end{enumerate}
+
+\section{Hash Collision-Free Property (40 Points)}
+
+In this assignment, we will investigate hash function's collision-free properties. We will use the brute-force
+method to see how long it takes to break these properties (Bitcoin mining essentially works in this way as well). Instead of using openssl's command-line tools, you are required to write your own C programs to invoke the message digest functions in openssl's crypto library. A sample code can be found from \url{http://www.openssl.org/docs/crypto/EVP_
+DigestInit.html}. Please get familiar with this sample code.
+
+You may need to install the openssl source code in your computer. You can try the following commands:
+\begin{lstlisting}
+% sudo apt-get source openssl
+Untar the tar ball (e.g., "tar zxvf file.tar.gz" which will extract the files from file.tar.gz), and run the following commands. Please also that you should read the INSTALL file first, which is usually how we install programs in Unix/Linux world.
+% cd openssl-xxx
+% sudo ./config
+% sudo make
+% sudo make test
+% sudo make install
+\end{lstlisting}
+
+
+Since most of the hash functions are quite strong against the brute-force attack on those two properties,
+it will take us years to break them using the brute-force method. To make the task feasible, we reduce the
+length of the hash value to 24 bits. We can use any one-way hash function, but we only use the first 24 bits
+of the hash value in this assignment. Namely, we are using a modified one-way hash function. Please design an
+experiment to find out the following:
+\begin{enumerate}
+\item How many trials it will take you to find two messages with the same hash values using the brute-force
+method? You should repeat your experiment for multiple times, and report your average number of
+trials.
+\item How many trials it will take you to find a message has the same hash value as a given/known message's
+hash value using the brute-force method? Similarly, you should report the average.
+\item Based on your observation, which case is easier to break using the brute-force method?
+\item Can you explain the difference in your observation mathematically (i.e., a formal
+proof)?
+\end{enumerate}
+
+ 
+\section{Submitting Your Homework}
+Please write a report describing how you solve each of the problem above, and submit at CARMEN.
+
+\end{document}
