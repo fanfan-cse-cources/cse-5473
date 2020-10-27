@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
     mdctx = EVP_MD_CTX_new();
 
 #ifdef FIRST
-    randString(mess1);
+    randString(mess1); // generated a random string with length of MAX_STR_LENG
 #endif
 
     EVP_DigestInit_ex(mdctx, md, NULL);
